@@ -1,5 +1,3 @@
-/* front.c - a lexical analyzer system for simple
- arithmetic expressions */
 #include <stdio.h>
 #include <ctype.h>
 
@@ -52,44 +50,41 @@ int lex(void);
 #define FOREACH_CODE 41
 
 
-/******************************************************/
-/* main driver */
+/* main */
 int main(void) {
-	/* Open the input data file and process its contents */
+	/* Open the input data */
 	 if ((in_fp = fopen("front.in", "r")) == NULL)
 	 	printf("ERROR - cannot open front.in \n");
 	 else {
 	 	getChar();
-	 do {
-	 	lex();
-         
-	 } while (nextToken != EOF);
+	    do {
+	 	    lex();
+	    }while (nextToken != EOF);
 	 }
 	 printf("<Exit main>\n");
 	 return 0;
 }
-/******************************************************/
 /* lookup - a function to look up operators and
  parentheses and return the token */
 int lookup(char ch) {
 	 switch (ch) {
-         case '=':
+         case '=': //used to check for syntax of assignment
             addChar();
             nextToken = EQUALS;
             break;
-         case ';':
+         case ';': //used to check for syntax of assignment and return
             addChar();
             nextToken = SEMICOLON;
             break;
-        case ':':
+        case ':': //used to check for syntax of case and for each
             addChar();
             nextToken = COLON;
             break;
-         case '{':
+         case '{': //used to check for syntax of block
             addChar();
             nextToken = LEFT_BRACE;
             break;
-         case '}':
+         case '}': //used to check for syntax of block
             addChar();
             nextToken = RIGHT_BRACE;
             break;
@@ -126,8 +121,6 @@ int lookup(char ch) {
 	 return nextToken;
 }
 
-
-/******************************************************/
 /* addChar - a function to add nextChar to lexeme */
 void addChar(void) {
 	if (lexLen <= 98) {
@@ -137,8 +130,6 @@ void addChar(void) {
 	printf("Error - lexeme is too long \n");
 }
 
-
-/******************************************************/
 /* getChar - a function to get the next character of
  input and determine its character class */
 void getChar(void) {
@@ -153,7 +144,6 @@ void getChar(void) {
 	 	charClass = EOF;
 }
 
-/******************************************************/
 /* getNonBlank - a function to call getChar until it
  returns a non-whitespace character */
 void getNonBlank(void) {
@@ -161,9 +151,7 @@ void getNonBlank(void) {
 	getChar();
 }
 
-/******************************************************/
-/* lex - a simple lexical analyzer for arithmetic
- expressions */
+/* lex - lexical analyzer that sets token values and calls syn to check for syntax */
 int lex(void) {
     
 	 lexLen = 0;
@@ -178,6 +166,7 @@ int lex(void) {
 				 addChar();
 				 getChar();
 			 }
+             //sets nexttoken to corresponding token code
              if (!strcmp(lexeme, "foreach")){
 				     nextToken = FOREACH_CODE;
 				     break;
@@ -257,22 +246,19 @@ int lex(void) {
 } /* End of function lex */
 
 
-
+/* syn - syntax analyzer to call statement methods to check for syntax */
 void syn(charClass) {
 	switch (nextToken) {
 		/* Identifiers */
 		case FOR_CODE:
             forstmt();
             break;
-		/* Integer literals */
 		case IF_CODE:
 			ifstmt();
 		 	break;
-        
         case WHILE_CODE:
 			whilestmt();
 		 	break;
-
         case RETURN_CODE:
 			returns();
 		 	break;
@@ -295,7 +281,7 @@ void syn(charClass) {
 	 return;
 }
 
-
+//For statment method to check for syntax
 void forstmt(void) {
     if (nextToken != FOR_CODE){
  	    error();
@@ -316,7 +302,7 @@ void forstmt(void) {
     printf("<Exit for>\n");
     return;
 }
-
+//Foreach statment method to check for syntax
 void foreach(void) {
     if (nextToken != FOREACH_CODE){
  	    error();
@@ -330,7 +316,7 @@ void foreach(void) {
  		        lex();
  		    }
  		    while (nextToken != RIGHT_PAREN){
- 		    lex();
+ 		        lex();
  		    }
  	    }
     }
@@ -339,7 +325,7 @@ void foreach(void) {
     printf("<Exit foreach>\n");
     return;
 }
-
+//Assignment statment method to check for syntax
 void assignment(void) {
     if (nextToken != EQUALS){
  	    error();
@@ -357,7 +343,7 @@ void assignment(void) {
     lex();
     return;
 }
-
+//Block method to check for syntax
 void block(void) {
     printf("<Enter block>\n");
     if (nextToken != LEFT_BRACE){
@@ -371,7 +357,7 @@ void block(void) {
     printf("<Exit block>\n");
     return;
 }
-
+//Method to check beginning of file for void main
 void program(void) {
     printf("<Enter main>\n");
     if (nextToken != VOID_CODE){
@@ -394,7 +380,7 @@ void program(void) {
     block();
     return;
 }
-
+//Switch statment method to check for syntax
 void switches(void) {
     printf("<Enter switch>\n");
     if (nextToken != SWITCH_CODE){
@@ -436,14 +422,14 @@ void switches(void) {
     lex();
     return;
 }
-
+//if statment method to check for syntax
 void ifstmt(void) {
     printf("<Enter if>\n");
     if (nextToken != IF_CODE){
  	    error();
     } else {
         lex();
-        if (nextToken != LEFT_PAREN)
+        if (nextToken != LEFT_PAREN) 
             error();
         else {
             while (nextToken != RIGHT_PAREN){
@@ -452,11 +438,11 @@ void ifstmt(void) {
         }
     }
     lex();
-    block();
+    block();//block for end of 
     printf("<Exit if>\n");
     return;
 }
-
+//While statment method to check for syntax
 void whilestmt(void) {
     printf("<Enter while>\n");
     if (nextToken != WHILE_CODE){
@@ -478,7 +464,7 @@ void whilestmt(void) {
     printf("<Exit while>\n");
     return;
 }
-
+//Return statment method to check for syntax
 void returns(void) {
     printf("<Enter return>\n");
     if (nextToken != RETURN_CODE){
@@ -492,7 +478,7 @@ void returns(void) {
     printf("<Exit return>\n");
     return;
 }
-
+//Do-while statment method to check for syntax
 void dostmt(void) {
     printf("<Enter dowhile>'\n");
     if (nextToken != DO_CODE){
@@ -508,5 +494,3 @@ void dostmt(void) {
         return;
     }
 }
-
-

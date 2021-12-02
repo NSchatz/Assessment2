@@ -1,0 +1,25 @@
+void main(){
+    for(a){
+        a = b;
+    }
+    foreach(b:a){
+        b = a;
+    }
+    
+    switch(){
+        case a:
+        case b:
+    }
+    
+    if(a=b){
+        a
+    }
+    while(b=a){
+        
+    }
+    do{
+        
+    }while(a)
+    
+    return 0;
+}
